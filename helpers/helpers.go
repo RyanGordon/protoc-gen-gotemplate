@@ -133,6 +133,7 @@ var ProtoHelpersFuncMap = template.FuncMap{
 	"goTypeWithPackage":            goTypeWithPackage,
 	"goTypeWithGoPackage":          goTypeWithGoPackage,
 	"jsType":                       jsType,
+	"tsType":                       tsType,
 	"jsSuffixReserved":             jsSuffixReservedKeyword,
 	"namespacedFlowType":           namespacedFlowType,
 	"httpVerb":                     httpVerb,
@@ -1079,6 +1080,40 @@ func goZeroValue(f *descriptor.FieldDescriptorProto) string {
 		return nilString
 	default:
 		return nilString
+	}
+}
+
+func tsType(f *descriptor.FieldDescriptorProto) string {
+	template := "%s"
+	if isFieldRepeated(f) {
+		template = "%s[]"
+	}
+
+	switch *f.Type {
+	case descriptor.FieldDescriptorProto_TYPE_MESSAGE,
+		descriptor.FieldDescriptorProto_TYPE_ENUM:
+		return fmt.Sprintf(template, shortType(*f.TypeName))
+	case descriptor.FieldDescriptorProto_TYPE_DOUBLE,
+		descriptor.FieldDescriptorProto_TYPE_FLOAT,
+		descriptor.FieldDescriptorProto_TYPE_INT64,
+		descriptor.FieldDescriptorProto_TYPE_UINT64,
+		descriptor.FieldDescriptorProto_TYPE_INT32,
+		descriptor.FieldDescriptorProto_TYPE_FIXED64,
+		descriptor.FieldDescriptorProto_TYPE_FIXED32,
+		descriptor.FieldDescriptorProto_TYPE_UINT32,
+		descriptor.FieldDescriptorProto_TYPE_SFIXED32,
+		descriptor.FieldDescriptorProto_TYPE_SFIXED64,
+		descriptor.FieldDescriptorProto_TYPE_SINT32,
+		descriptor.FieldDescriptorProto_TYPE_SINT64:
+		return fmt.Sprintf(template, "number")
+	case descriptor.FieldDescriptorProto_TYPE_BOOL:
+		return fmt.Sprintf(template, "boolean")
+	case descriptor.FieldDescriptorProto_TYPE_BYTES:
+		return fmt.Sprintf(template, "Uint8Array")
+	case descriptor.FieldDescriptorProto_TYPE_STRING:
+		return fmt.Sprintf(template, "string")
+	default:
+		return fmt.Sprintf(template, "any")
 	}
 }
 
