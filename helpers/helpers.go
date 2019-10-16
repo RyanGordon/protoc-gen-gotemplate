@@ -331,7 +331,7 @@ func stringMethodOptionsExtension(fieldID int32, f *descriptor.MethodDescriptorP
 			ExtendedType:  extendedType,
 			ExtensionType: extensionType,
 			Field:         fieldID,
-			Tag:           fmt.Sprintf("bytes,%d", fieldID),
+			Tag:           fmt.Sprintf("bytes,%d,opt", fieldID),
 		}
 		proto.RegisterExtension(ed)
 		eds = proto.RegisteredExtensions(f.Options)
