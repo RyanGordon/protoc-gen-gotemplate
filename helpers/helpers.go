@@ -371,7 +371,7 @@ func stringFileOptionsExtension(fieldID int32, f *descriptor.FileDescriptorProto
 			ExtendedType:  extendedType,
 			ExtensionType: extensionType,
 			Field:         fieldID,
-			Tag:           fmt.Sprintf("bytes,%d", fieldID),
+			Tag:           fmt.Sprintf("bytes,%d,opt", fieldID),
 		}
 		proto.RegisterExtension(ed)
 		eds = proto.RegisteredExtensions(f.Options)
@@ -406,7 +406,7 @@ func stringFieldExtension(fieldID int32, f *descriptor.FieldDescriptorProto) str
 			ExtendedType:  extendedType,
 			ExtensionType: extensionType,
 			Field:         fieldID,
-			Tag:           fmt.Sprintf("bytes,%d", fieldID),
+			Tag:           fmt.Sprintf("bytes,%d,opt", fieldID),
 		}
 		proto.RegisterExtension(ed)
 		eds = proto.RegisteredExtensions(f.Options)
@@ -441,7 +441,7 @@ func int64FieldExtension(fieldID int32, f *descriptor.FieldDescriptorProto) int6
 			ExtendedType:  extendedType,
 			ExtensionType: extensionType,
 			Field:         fieldID,
-			Tag:           fmt.Sprintf("varint,%d", fieldID),
+			Tag:           fmt.Sprintf("varint,%d,opt", fieldID),
 		}
 		proto.RegisterExtension(ed)
 		eds = proto.RegisteredExtensions(f.Options)
@@ -476,7 +476,7 @@ func int64MessageExtension(fieldID int32, f *descriptor.DescriptorProto) int64 {
 			ExtendedType:  extendedType,
 			ExtensionType: extensionType,
 			Field:         fieldID,
-			Tag:           fmt.Sprintf("varint,%d", fieldID),
+			Tag:           fmt.Sprintf("varint,%d,opt", fieldID),
 		}
 		proto.RegisterExtension(ed)
 		eds = proto.RegisteredExtensions(f.Options)
@@ -511,7 +511,7 @@ func stringMessageExtension(fieldID int32, f *descriptor.DescriptorProto) string
 			ExtendedType:  extendedType,
 			ExtensionType: extensionType,
 			Field:         fieldID,
-			Tag:           fmt.Sprintf("bytes,%d", fieldID),
+			Tag:           fmt.Sprintf("bytes,%d,opt", fieldID),
 		}
 		proto.RegisterExtension(ed)
 		eds = proto.RegisteredExtensions(f.Options)
@@ -546,7 +546,7 @@ func boolMethodOptionsExtension(fieldID int32, f *descriptor.MethodDescriptorPro
 			ExtendedType:  extendedType,
 			ExtensionType: extensionType,
 			Field:         fieldID,
-			Tag:           fmt.Sprintf("varint,%d", fieldID),
+			Tag:           fmt.Sprintf("varint,%d,opt", fieldID),
 		}
 		proto.RegisterExtension(ed)
 		eds = proto.RegisteredExtensions(f.Options)
@@ -581,7 +581,7 @@ func boolFieldExtension(fieldID int32, f *descriptor.FieldDescriptorProto) bool 
 			ExtendedType:  extendedType,
 			ExtensionType: extensionType,
 			Field:         fieldID,
-			Tag:           fmt.Sprintf("varint,%d", fieldID),
+			Tag:           fmt.Sprintf("varint,%d,opt", fieldID),
 		}
 		proto.RegisterExtension(ed)
 		eds = proto.RegisteredExtensions(f.Options)
@@ -616,7 +616,7 @@ func boolMessageExtension(fieldID int32, f *descriptor.DescriptorProto) bool {
 			ExtendedType:  extendedType,
 			ExtensionType: extensionType,
 			Field:         fieldID,
-			Tag:           fmt.Sprintf("varint,%d", fieldID),
+			Tag:           fmt.Sprintf("varint,%d,opt", fieldID),
 		}
 		proto.RegisterExtension(ed)
 		eds = proto.RegisteredExtensions(f.Options)
