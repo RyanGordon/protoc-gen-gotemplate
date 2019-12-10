@@ -150,7 +150,7 @@ var ProtoHelpersFuncMap = template.FuncMap{
 	"stringFileOptionsExtension":   stringFileOptionsExtension,
 	"stringMessageExtension":       stringMessageExtension,
 	"stringFieldExtension":         stringFieldExtension,
-	"float64FieldExtension":        float64FieldExtension,
+	"float32FieldExtension":        float32FieldExtension,
 	"int64FieldExtension":          int64FieldExtension,
 	"int64MessageExtension":        int64MessageExtension,
 	"stringMethodOptionsExtension": stringMethodOptionsExtension,
@@ -461,7 +461,7 @@ func int64FieldExtension(fieldID int32, f *descriptor.FieldDescriptorProto) int6
 	return *i
 }
 
-func float64FieldExtension(fieldID int32, f *descriptor.FieldDescriptorProto) float64 {
+func float32FieldExtension(fieldID int32, f *descriptor.FieldDescriptorProto) float32 {
 	if f == nil {
 		return 0
 	}
@@ -469,7 +469,7 @@ func float64FieldExtension(fieldID int32, f *descriptor.FieldDescriptorProto) fl
 		return 0
 	}
 	var extendedType *descriptor.FieldOptions
-	var extensionType *float64
+	var extensionType *float32
 
 	eds := proto.RegisteredExtensions(f.Options)
 	if eds[fieldID] == nil {
@@ -477,7 +477,7 @@ func float64FieldExtension(fieldID int32, f *descriptor.FieldDescriptorProto) fl
 			ExtendedType:  extendedType,
 			ExtensionType: extensionType,
 			Field:         fieldID,
-			Tag:           fmt.Sprintf("varint,%d,opt", fieldID),
+			Tag:           fmt.Sprintf("fixed32,%d,opt", fieldID),
 		}
 		proto.RegisterExtension(ed)
 		eds = proto.RegisteredExtensions(f.Options)
@@ -488,7 +488,7 @@ func float64FieldExtension(fieldID int32, f *descriptor.FieldDescriptorProto) fl
 		return 0
 	}
 
-	i, ok := ext.(*float64)
+	i, ok := ext.(*float32)
 	if !ok {
 		return 0
 	}
