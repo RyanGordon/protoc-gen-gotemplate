@@ -160,6 +160,8 @@ var ProtoHelpersFuncMap = template.FuncMap{
 	"boolMethodOptionsExtension":   boolMethodOptionsExtension,
 	"boolMessageExtension":         boolMessageExtension,
 	"boolFieldExtension":           boolFieldExtension,
+	"boolEnumExtension":            boolEnumExtension,
+	"int64EnumExtension":           int64EnumExtension,
 	"isFieldMap":                   isFieldMap,
 	"fieldMapKeyType":              fieldMapKeyType,
 	"fieldMapValueType":            fieldMapValueType,
@@ -641,6 +643,76 @@ func boolFieldExtension(fieldID int32, f *descriptor.FieldDescriptorProto) bool 
 	}
 
 	return *b
+}
+
+func boolEnumExtension(fieldID int32, f *descriptor.EnumValueDescriptorProto) bool {
+	if f == nil {
+		return false
+	}
+	if f.Options == nil {
+		return false
+	}
+	var extendedType *descriptor.EnumValueOptions
+	var extensionType *bool
+
+	eds := proto.RegisteredExtensions(f.Options)
+	if eds[fieldID] == nil {
+		ed := &proto.ExtensionDesc{
+			ExtendedType:  extendedType,
+			ExtensionType: extensionType,
+			Field:         fieldID,
+			Tag:           fmt.Sprintf("varint,%d,opt", fieldID),
+		}
+		proto.RegisterExtension(ed)
+		eds = proto.RegisteredExtensions(f.Options)
+	}
+
+	ext, err := proto.GetExtension(f.Options, eds[fieldID])
+	if err != nil {
+		return false
+	}
+
+	b, ok := ext.(*bool)
+	if !ok {
+		return false
+	}
+
+	return *b
+}
+
+func int64EnumExtension(fieldID int32, f *descriptor.EnumValueDescriptorProto) int64 {
+	if f == nil {
+		return 0
+	}
+	if f.Options == nil {
+		return 0
+	}
+	var extendedType *descriptor.EnumValueOptions
+	var extensionType *int64
+
+	eds := proto.RegisteredExtensions(f.Options)
+	if eds[fieldID] == nil {
+		ed := &proto.ExtensionDesc{
+			ExtendedType:  extendedType,
+			ExtensionType: extensionType,
+			Field:         fieldID,
+			Tag:           fmt.Sprintf("varint,%d,opt", fieldID),
+		}
+		proto.RegisterExtension(ed)
+		eds = proto.RegisteredExtensions(f.Options)
+	}
+
+	ext, err := proto.GetExtension(f.Options, eds[fieldID])
+	if err != nil {
+		return 0
+	}
+
+	i, ok := ext.(*int64)
+	if !ok {
+		return 0
+	}
+
+	return *i
 }
 
 func boolMessageExtension(fieldID int32, f *descriptor.DescriptorProto) bool {
