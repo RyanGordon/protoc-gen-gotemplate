@@ -29,6 +29,9 @@ var ProtoHelpersFuncMap = template.FuncMap{
 	}) string {
 		return i.String()
 	},
+	"derefString": func(str *string) string {
+		return *str
+	},
 	"json": func(v interface{}) string {
 		a, err := json.Marshal(v)
 		if err != nil {
