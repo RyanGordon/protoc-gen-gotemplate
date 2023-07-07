@@ -126,6 +126,7 @@ var ProtoHelpersFuncMap = template.FuncMap{
 	"snakeCase":                    xstrings.ToSnakeCase,
 	"getProtoFile":                 getProtoFile,
 	"getMessageType":               getMessageType,
+	"getNestedType":                getNestedType,
 	"getEnumValue":                 getEnumValue,
 	"isFieldMessage":               isFieldMessage,
 	"isFieldMessageTimeStamp":      isFieldMessageTimeStamp,
@@ -718,6 +719,21 @@ func getMessageType(f *descriptor.FileDescriptorProto, name string) *ggdescripto
 	return nil
 }
 
+func getNestedType(m *descriptor.DescriptorProto, name string) *ggdescriptor.Message {
+	// name is in the form .packageName.MessageTypeName.InnerMessageTypeName...
+	// e.g. .article.ProductTag
+	splits := strings.Split(name, ".")
+	target := splits[len(splits)-1]
+	for _, m := range m.NestedType {
+		if target == *m.Name {
+			return &ggdescriptor.Message{
+				DescriptorProto: m,
+			}
+		}
+	}
+	return nil
+}
+
 func getEnumValue(f []*descriptor.EnumDescriptorProto, name string) []*descriptor.EnumValueDescriptorProto {
 	for _, item := range f {
 		if strings.EqualFold(*item.Name, name) {
@@ -853,16 +869,17 @@ func fieldMapValueType(f *descriptor.FieldDescriptorProto, m *descriptor.Descrip
 //
 // example:
 // ```proto
-// message GetArticleResponse {
-// 	Article article = 1;
-// 	message Storage {
-// 		  string code = 1;
-// 	}
-// 	repeated Storage storages = 2;
-// }
+//
+//	message GetArticleResponse {
+//		Article article = 1;
+//		message Storage {
+//			  string code = 1;
+//		}
+//		repeated Storage storages = 2;
+//	}
+//
 // ```
 // Then the type of `storages` is `GetArticleResponse_Storage` for the go language.
-//
 func goTypeWithGoPackage(p *descriptor.FileDescriptorProto, f *descriptor.FieldDescriptorProto) string {
 	pkg := ""
 	if *f.Type == descriptor.FieldDescriptorProto_TYPE_MESSAGE || *f.Type == descriptor.FieldDescriptorProto_TYPE_ENUM {
@@ -1132,7 +1149,7 @@ func goTypeWithEmbedded(pkg string, f *descriptor.FieldDescriptorProto, p *descr
 	}
 }
 
-//Deprecated. Instead use goTypeWithEmbedded
+// Deprecated. Instead use goTypeWithEmbedded
 func goType(pkg string, f *descriptor.FieldDescriptorProto) string {
 	if pkg != "" {
 		pkg = pkg + "."
