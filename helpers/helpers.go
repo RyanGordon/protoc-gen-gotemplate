@@ -719,7 +719,7 @@ func getMessageType(f *descriptor.FileDescriptorProto, name string) *ggdescripto
 	return nil
 }
 
-func getNestedType(m *descriptor.DescriptorProto, name string) *ggdescriptor.Message {
+func getNestedType(m *ggdescriptor.Message, name string) *ggdescriptor.Message {
 	// name is in the form .packageName.MessageTypeName.InnerMessageTypeName...
 	// e.g. .article.ProductTag
 	splits := strings.Split(name, ".")
