@@ -893,10 +893,11 @@ func goTypeWithGoPackage(p *descriptor.FileDescriptorProto, f *descriptor.FieldD
 		if isTimestampPackage(*f.TypeName) {
 			pkg = "timestamp"
 		} else {
-			pkg = *p.GetOptions().GoPackage
+			/*pkg = *p.GetOptions().GoPackage
 			if strings.Contains(*p.GetOptions().GoPackage, ";") {
 				pkg = strings.Split(*p.GetOptions().GoPackage, ";")[1]
-			}
+			}*/
+			pkg = getPackageTypeName(*f.TypeName)
 		}
 	}
 	return goTypeWithEmbedded(pkg, f, p)
