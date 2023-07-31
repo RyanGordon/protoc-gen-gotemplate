@@ -1126,17 +1126,17 @@ func goTypeWithEmbedded(pkg string, f *descriptor.FieldDescriptorProto, p *descr
 		return "string"
 	case descriptor.FieldDescriptorProto_TYPE_MESSAGE:
 		name := *f.TypeName
-		if *f.Label == descriptor.FieldDescriptorProto_LABEL_REPEATED {
-			fieldPackage := strings.Split(*f.TypeName, ".")
-			filePackage := strings.Split(*p.Package, ".")
-			// check if we are working with a message embedded.
-			if len(fieldPackage) > 1 && len(fieldPackage)+1 > len(filePackage)+1 {
-				name = strings.Join(fieldPackage[len(filePackage)+1:], "_")
-			}
-
-			return fmt.Sprintf("[]*%s%s", pkg, shortType(name))
+		fieldPackage := strings.Split(*f.TypeName, ".")
+		filePackage := strings.Split(*p.Package, ".")
+		// check if we are working with a message embedded.
+		if len(fieldPackage) > 1 && len(fieldPackage)+1 > len(filePackage)+1 {
+			name = strings.Join(fieldPackage[len(filePackage)+1:], "_")
 		}
-		return fmt.Sprintf("*%s%s", pkg, shortType(name))
+
+		if *f.Label == descriptor.FieldDescriptorProto_LABEL_REPEATED {
+			return fmt.Sprintf("[]%s%s", pkg, shortType(name))
+		}
+		return fmt.Sprintf("%s%s", pkg, shortType(name))
 	case descriptor.FieldDescriptorProto_TYPE_BYTES:
 		if *f.Label == descriptor.FieldDescriptorProto_LABEL_REPEATED {
 			return "[]byte"
@@ -1150,7 +1150,7 @@ func goTypeWithEmbedded(pkg string, f *descriptor.FieldDescriptorProto, p *descr
 		if len(fieldPackage) > 1 && len(fieldPackage)+1 > len(filePackage)+1 {
 			name = strings.Join(fieldPackage[len(filePackage)+1:], "_")
 		}
-		return fmt.Sprintf("*%s%s", pkg, shortType(name))
+		return fmt.Sprintf("%s%s", pkg, shortType(name))
 	default:
 		return "interface{}"
 	}
@@ -1252,16 +1252,32 @@ func goZeroValue(f *descriptor.FieldDescriptorProto) string {
 	}
 }
 
-func graphqlType(f *descriptor.FieldDescriptorProto) string {
+func graphqlType(f *descriptor.FieldDescriptorProto, p *descriptor.FileDescriptorProto) string {
 	template := "%s"
 	if isFieldRepeated(f) {
 		template = "[%s!]"
 	}
 
 	switch *f.Type {
-	case descriptor.FieldDescriptorProto_TYPE_MESSAGE,
-		descriptor.FieldDescriptorProto_TYPE_ENUM:
-		return fmt.Sprintf(template, shortType(*f.TypeName))
+	case descriptor.FieldDescriptorProto_TYPE_MESSAGE:
+		name := *f.TypeName
+		fieldPackage := strings.Split(*f.TypeName, ".")
+		filePackage := strings.Split(*p.Package, ".")
+		// check if we are working with a message embedded.
+		if len(fieldPackage) > 1 && len(fieldPackage)+1 > len(filePackage)+1 {
+			name = strings.Join(fieldPackage[len(filePackage)+1:], "_")
+		}
+
+		return fmt.Sprintf(template, shortType(name))
+	case descriptor.FieldDescriptorProto_TYPE_ENUM:
+		name := *f.TypeName
+		fieldPackage := strings.Split(*f.TypeName, ".")
+		filePackage := strings.Split(*p.Package, ".")
+		// check if we are working with a message embedded.
+		if len(fieldPackage) > 1 && len(fieldPackage)+1 > len(filePackage)+1 {
+			name = strings.Join(fieldPackage[len(filePackage)+1:], "_")
+		}
+		return fmt.Sprintf(template, shortType(name))
 	case descriptor.FieldDescriptorProto_TYPE_DOUBLE,
 		descriptor.FieldDescriptorProto_TYPE_FLOAT:
 		return fmt.Sprintf(template, "Float")
@@ -1287,16 +1303,32 @@ func graphqlType(f *descriptor.FieldDescriptorProto) string {
 	}
 }
 
-func tsType(f *descriptor.FieldDescriptorProto) string {
+func tsType(f *descriptor.FieldDescriptorProto, p *descriptor.FileDescriptorProto) string {
 	template := "%s"
 	if isFieldRepeated(f) {
 		template = "%s[]"
 	}
 
 	switch *f.Type {
-	case descriptor.FieldDescriptorProto_TYPE_MESSAGE,
-		descriptor.FieldDescriptorProto_TYPE_ENUM:
-		return fmt.Sprintf(template, shortType(*f.TypeName))
+	case descriptor.FieldDescriptorProto_TYPE_MESSAGE:
+		name := *f.TypeName
+		fieldPackage := strings.Split(*f.TypeName, ".")
+		filePackage := strings.Split(*p.Package, ".")
+		// check if we are working with a message embedded.
+		if len(fieldPackage) > 1 && len(fieldPackage)+1 > len(filePackage)+1 {
+			name = strings.Join(fieldPackage[len(filePackage)+1:], "_")
+		}
+
+		return fmt.Sprintf(template, shortType(name))
+	case descriptor.FieldDescriptorProto_TYPE_ENUM:
+		name := *f.TypeName
+		fieldPackage := strings.Split(*f.TypeName, ".")
+		filePackage := strings.Split(*p.Package, ".")
+		// check if we are working with a message embedded.
+		if len(fieldPackage) > 1 && len(fieldPackage)+1 > len(filePackage)+1 {
+			name = strings.Join(fieldPackage[len(filePackage)+1:], "_")
+		}
+		return fmt.Sprintf(template, shortType(name))
 	case descriptor.FieldDescriptorProto_TYPE_DOUBLE,
 		descriptor.FieldDescriptorProto_TYPE_FLOAT,
 		descriptor.FieldDescriptorProto_TYPE_INT64,
