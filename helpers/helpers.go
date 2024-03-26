@@ -10,6 +10,7 @@ import (
 	"text/template"
 
 	"github.com/Masterminds/sprig"
+	"github.com/davecgh/go-spew/spew"
 	"github.com/golang/protobuf/proto"
 	"github.com/golang/protobuf/protoc-gen-go/descriptor"
 	ggdescriptor "github.com/grpc-ecosystem/grpc-gateway/protoc-gen-grpc-gateway/descriptor"
@@ -121,6 +122,9 @@ var ProtoHelpersFuncMap = template.FuncMap{
 			panic("psssst ... little help here ... you cannot divide by 0")
 		}
 		return a / b
+	},
+	"verbose": func(v interface{}) string {
+		return spew.Sprint(v)
 	},
 
 	"snakeCase":                        xstrings.ToSnakeCase,
@@ -584,7 +588,7 @@ func int64ArrayMethodOptionsExtension(fieldID int32, f *descriptor.MethodDescrip
 		return []int64{}
 	}
 	var extendedType *descriptor.MethodOptions
-	var extensionType *[]int64
+	var extensionType []int64
 
 	eds := proto.RegisteredExtensions(f.Options)
 	if eds[fieldID] == nil {
@@ -603,12 +607,12 @@ func int64ArrayMethodOptionsExtension(fieldID int32, f *descriptor.MethodDescrip
 		return []int64{}
 	}
 
-	arr, ok := ext.(*[]int64)
+	arr, ok := ext.([]int64)
 	if !ok {
 		return []int64{}
 	}
 
-	return *arr
+	return arr
 }
 
 func boolMethodOptionsExtension(fieldID int32, f *descriptor.MethodDescriptorProto) bool {
