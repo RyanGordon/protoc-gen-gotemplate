@@ -123,57 +123,58 @@ var ProtoHelpersFuncMap = template.FuncMap{
 		return a / b
 	},
 
-	"snakeCase":                    xstrings.ToSnakeCase,
-	"getProtoFile":                 getProtoFile,
-	"getMessageType":               getMessageType,
-	"getEnumValue":                 getEnumValue,
-	"isFieldMessage":               isFieldMessage,
-	"isFieldMessageTimeStamp":      isFieldMessageTimeStamp,
-	"isFieldRepeated":              isFieldRepeated,
-	"haskellType":                  haskellType,
-	"goType":                       goType,
-	"goZeroValue":                  goZeroValue,
-	"goTypeWithPackage":            goTypeWithPackage,
-	"goTypeWithGoPackage":          goTypeWithGoPackage,
-	"jsType":                       jsType,
-	"tsType":                       tsType,
-	"jsSuffixReserved":             jsSuffixReservedKeyword,
-	"namespacedFlowType":           namespacedFlowType,
-	"httpVerb":                     httpVerb,
-	"httpPath":                     httpPath,
-	"httpPathsAdditionalBindings":  httpPathsAdditionalBindings,
-	"httpBody":                     httpBody,
-	"shortType":                    shortType,
-	"urlHasVarsFromMessage":        urlHasVarsFromMessage,
-	"lowerGoNormalize":             lowerGoNormalize,
-	"goNormalize":                  goNormalize,
-	"leadingComment":               leadingComment,
-	"trailingComment":              trailingComment,
-	"leadingDetachedComments":      leadingDetachedComments,
-	"stringFileOptionsExtension":   stringFileOptionsExtension,
-	"stringMessageExtension":       stringMessageExtension,
-	"stringFieldExtension":         stringFieldExtension,
-	"float32FieldExtension":        float32FieldExtension,
-	"int64FieldExtension":          int64FieldExtension,
-	"int64MessageExtension":        int64MessageExtension,
-	"stringMethodOptionsExtension": stringMethodOptionsExtension,
-	"boolMethodOptionsExtension":   boolMethodOptionsExtension,
-	"boolMessageExtension":         boolMessageExtension,
-	"boolFieldExtension":           boolFieldExtension,
-	"boolEnumExtension":            boolEnumExtension,
-	"int64EnumExtension":           int64EnumExtension,
-	"isFieldMap":                   isFieldMap,
-	"fieldMapKeyType":              fieldMapKeyType,
-	"fieldMapValueType":            fieldMapValueType,
-	"replaceDict":                  replaceDict,
-	"setStore":                     setStore,
-	"getStore":                     getStore,
-	"goPkg":                        goPkg,
-	"goPkgLastElement":             goPkgLastElement,
-	"cppType":                      cppType,
-	"cppTypeWithPackage":           cppTypeWithPackage,
-	"rustType":                     rustType,
-	"rustTypeWithPackage":          rustTypeWithPackage,
+	"snakeCase":                        xstrings.ToSnakeCase,
+	"getProtoFile":                     getProtoFile,
+	"getMessageType":                   getMessageType,
+	"getEnumValue":                     getEnumValue,
+	"isFieldMessage":                   isFieldMessage,
+	"isFieldMessageTimeStamp":          isFieldMessageTimeStamp,
+	"isFieldRepeated":                  isFieldRepeated,
+	"haskellType":                      haskellType,
+	"goType":                           goType,
+	"goZeroValue":                      goZeroValue,
+	"goTypeWithPackage":                goTypeWithPackage,
+	"goTypeWithGoPackage":              goTypeWithGoPackage,
+	"jsType":                           jsType,
+	"tsType":                           tsType,
+	"jsSuffixReserved":                 jsSuffixReservedKeyword,
+	"namespacedFlowType":               namespacedFlowType,
+	"httpVerb":                         httpVerb,
+	"httpPath":                         httpPath,
+	"httpPathsAdditionalBindings":      httpPathsAdditionalBindings,
+	"httpBody":                         httpBody,
+	"shortType":                        shortType,
+	"urlHasVarsFromMessage":            urlHasVarsFromMessage,
+	"lowerGoNormalize":                 lowerGoNormalize,
+	"goNormalize":                      goNormalize,
+	"leadingComment":                   leadingComment,
+	"trailingComment":                  trailingComment,
+	"leadingDetachedComments":          leadingDetachedComments,
+	"stringFileOptionsExtension":       stringFileOptionsExtension,
+	"stringMessageExtension":           stringMessageExtension,
+	"stringFieldExtension":             stringFieldExtension,
+	"float32FieldExtension":            float32FieldExtension,
+	"int64FieldExtension":              int64FieldExtension,
+	"int64MessageExtension":            int64MessageExtension,
+	"stringMethodOptionsExtension":     stringMethodOptionsExtension,
+	"boolMethodOptionsExtension":       boolMethodOptionsExtension,
+	"int64ArrayMethodOptionsExtension": int64ArrayMethodOptionsExtension,
+	"boolMessageExtension":             boolMessageExtension,
+	"boolFieldExtension":               boolFieldExtension,
+	"boolEnumExtension":                boolEnumExtension,
+	"int64EnumExtension":               int64EnumExtension,
+	"isFieldMap":                       isFieldMap,
+	"fieldMapKeyType":                  fieldMapKeyType,
+	"fieldMapValueType":                fieldMapValueType,
+	"replaceDict":                      replaceDict,
+	"setStore":                         setStore,
+	"getStore":                         getStore,
+	"goPkg":                            goPkg,
+	"goPkgLastElement":                 goPkgLastElement,
+	"cppType":                          cppType,
+	"cppTypeWithPackage":               cppTypeWithPackage,
+	"rustType":                         rustType,
+	"rustTypeWithPackage":              rustTypeWithPackage,
 }
 
 var pathMap map[interface{}]*descriptor.SourceCodeInfo_Location
@@ -575,6 +576,41 @@ func stringMessageExtension(fieldID int32, f *descriptor.DescriptorProto) string
 	return *str
 }
 
+func int64ArrayMethodOptionsExtension(fieldID int32, f *descriptor.MethodDescriptorProto) []int64 {
+	if f == nil {
+		return []int64{}
+	}
+	if f.Options == nil {
+		return []int64{}
+	}
+	var extendedType *descriptor.MethodOptions
+	var extensionType *[]int64
+
+	eds := proto.RegisteredExtensions(f.Options)
+	if eds[fieldID] == nil {
+		ed := &proto.ExtensionDesc{
+			ExtendedType:  extendedType,
+			ExtensionType: extensionType,
+			Field:         fieldID,
+			Tag:           fmt.Sprintf("varint,%d,opt", fieldID),
+		}
+		proto.RegisterExtension(ed)
+		eds = proto.RegisteredExtensions(f.Options)
+	}
+
+	ext, err := proto.GetExtension(f.Options, eds[fieldID])
+	if err != nil {
+		return []int64{}
+	}
+
+	arr, ok := ext.(*[]int64)
+	if !ok {
+		return []int64{}
+	}
+
+	return *arr
+}
+
 func boolMethodOptionsExtension(fieldID int32, f *descriptor.MethodDescriptorProto) bool {
 	if f == nil {
 		return false
@@ -925,16 +961,17 @@ func fieldMapValueType(f *descriptor.FieldDescriptorProto, m *descriptor.Descrip
 //
 // example:
 // ```proto
-// message GetArticleResponse {
-// 	Article article = 1;
-// 	message Storage {
-// 		  string code = 1;
-// 	}
-// 	repeated Storage storages = 2;
-// }
+//
+//	message GetArticleResponse {
+//		Article article = 1;
+//		message Storage {
+//			  string code = 1;
+//		}
+//		repeated Storage storages = 2;
+//	}
+//
 // ```
 // Then the type of `storages` is `GetArticleResponse_Storage` for the go language.
-//
 func goTypeWithGoPackage(p *descriptor.FileDescriptorProto, f *descriptor.FieldDescriptorProto) string {
 	pkg := ""
 	if *f.Type == descriptor.FieldDescriptorProto_TYPE_MESSAGE || *f.Type == descriptor.FieldDescriptorProto_TYPE_ENUM {
@@ -1204,7 +1241,7 @@ func goTypeWithEmbedded(pkg string, f *descriptor.FieldDescriptorProto, p *descr
 	}
 }
 
-//Deprecated. Instead use goTypeWithEmbedded
+// Deprecated. Instead use goTypeWithEmbedded
 func goType(pkg string, f *descriptor.FieldDescriptorProto) string {
 	if pkg != "" {
 		pkg = pkg + "."
