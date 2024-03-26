@@ -3,7 +3,6 @@ package pgghelpers
 import (
 	"encoding/json"
 	"fmt"
-	"log"
 	"reflect"
 	"regexp"
 	"strings"
@@ -607,7 +606,6 @@ func int64ArrayMethodOptionsExtension(fieldID int32, f *descriptor.MethodDescrip
 	if err != nil {
 		return []int64{}
 	}
-	log.Printf("ext: %+v", ext)
 
 	arr, ok := ext.([]int64)
 	if !ok {
