@@ -123,6 +123,9 @@ var ProtoHelpersFuncMap = template.FuncMap{
 		}
 		return a / b
 	},
+	"verbose": func(v interface{}) string {
+		return fmt.Sprintf("%+v", v)
+	},
 
 	"snakeCase":                        xstrings.ToSnakeCase,
 	"getProtoFile":                     getProtoFile,
@@ -610,7 +613,7 @@ func int64ArrayMethodOptionsExtension(fieldID int32, f *descriptor.MethodDescrip
 		return []int64{}
 	}
 
-	return *arr
+	return arr
 }
 
 func boolMethodOptionsExtension(fieldID int32, f *descriptor.MethodDescriptorProto) bool {
