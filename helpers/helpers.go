@@ -11,6 +11,7 @@ import (
 	"text/template"
 
 	"github.com/Masterminds/sprig"
+	"github.com/davecgh/go-spew/spew"
 	"github.com/golang/protobuf/proto"
 	"github.com/golang/protobuf/protoc-gen-go/descriptor"
 	ggdescriptor "github.com/grpc-ecosystem/grpc-gateway/protoc-gen-grpc-gateway/descriptor"
@@ -124,7 +125,7 @@ var ProtoHelpersFuncMap = template.FuncMap{
 		return a / b
 	},
 	"verbose": func(v interface{}) string {
-		return fmt.Sprintf("%+v", v)
+		return spew.Sprint(v)
 	},
 
 	"snakeCase":                        xstrings.ToSnakeCase,
